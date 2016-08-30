@@ -332,5 +332,7 @@ public class WeatherActivity extends Activity{
         intent.setAction("action.exit");  
         WeatherActivity.this.sendBroadcast(intent);  
 		Log.d("发送广播", intent.getAction());
+		Intent exitintent = new Intent(WeatherActivity.this,MainActivity.class);
+		startActivity(exitintent);
 	}
 }
