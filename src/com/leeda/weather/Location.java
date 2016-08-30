@@ -1,8 +1,8 @@
 /**
- * »ñÈ¡µ±Ç°³ÇÊÐÃû³Æ
+ * ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
 
-package com.example.weather;
+package com.leeda.weather;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,7 +26,7 @@ public class Location {
 			@Override
 			public void run() {
 				try {
-					// ×é×°·´ÏòµØÀí±àÂëµÄ½Ó¿ÚµØÖ·
+					// ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ó¿Úµï¿½Ö·
 					StringBuilder url = new StringBuilder();
 //					url.append("http://api.map.baidu.com/geocoder/v2/?ak=nUvlnh8wk6cDupYs5foacyXz&location=");
 //					url.append(location.getLatitude()).append(",")
@@ -37,7 +37,7 @@ public class Location {
 					url.append("&output=json&pois=1");
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpGet httpGet = new HttpGet(url.toString());
-					// ÔÚÇëÇóÏûÏ¢Í·ÖÐÖ¸¶¨ÓïÑÔ£¬±£Ö¤·þÎñÆ÷»á·µ»ØÖÐÎÄÊý¾Ý
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢Í·ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á·µï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					httpGet.addHeader("Accept-Language", "zh-CN");
 					HttpResponse httpResponse = httpClient.execute(httpGet);
 					if (httpResponse.getStatusLine().getStatusCode() == 200) {

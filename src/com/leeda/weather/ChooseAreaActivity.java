@@ -1,4 +1,4 @@
-package com.example.weather;
+package com.leeda.weather;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import model.Province;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.leeda.weather.R;
 
 import android.app.Activity;
 import android.content.Intent;

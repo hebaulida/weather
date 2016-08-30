@@ -1,4 +1,4 @@
-package com.example.weather;
+package com.leeda.weather;
 
 
 import java.io.BufferedReader;
@@ -35,6 +35,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.leeda.weather.R;
 
 import db.WeatherOpenHelper;
 

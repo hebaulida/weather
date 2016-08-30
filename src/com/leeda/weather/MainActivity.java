@@ -1,4 +1,4 @@
-package com.example.weather;
+package com.leeda.weather;
 
 import java.util.List;
 
@@ -12,6 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.baidu.location.b.d;
+import com.baidu.mobstat.SendStrategyEnum;
+import com.baidu.mobstat.StatService;
+import com.leeda.weather.R;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -47,6 +50,9 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//百度统计
+		StatService.setSendLogStrategy(this, SendStrategyEnum.APP_START, 1, false);
+		
 		sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
 		String cityName = sharedPreferences.getString("cityName", "");
 		String cityCode = sharedPreferences.getString("cityCode", "");
