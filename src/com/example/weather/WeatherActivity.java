@@ -12,13 +12,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +44,7 @@ public class WeatherActivity extends Activity{
 	private TextView typeText;
 	private TextView fengText;
 	private TextView wenduText;
+	private Button indexBt;
 	private String cityname = null;
 	private String citycode = null;
 	private String citynamezidong = null;
@@ -47,11 +53,14 @@ public class WeatherActivity extends Activity{
 	protected static final int SHOW_RESPONSE = 0;
 	private Handler handler;
 	private WeatherOpenHelper dbHelper;
+	SharedPreferences sharedPreferences;
+	SharedPreferences.Editor editor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.weather_layout);
+		indexBt = (Button)findViewById(R.id.index_bt);
 		titleText = (TextView)findViewById(R.id.title);
 		dateText = (TextView)findViewById(R.id.date_view);
 		typeText = (TextView)findViewById(R.id.type_view);
@@ -83,6 +92,19 @@ public class WeatherActivity extends Activity{
 					}
 				}
 			};
+		indexBt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
+				editor = sharedPreferences.edit();
+				editor.clear();
+				editor.commit();
+				Intent index = new Intent(WeatherActivity.this,MainActivity.class);
+				startActivity(index);
+			}
+		});
 		/*
 		 * 先判断是从哪个选项来的，两个方法给citycode赋值
 		 */
@@ -102,6 +124,14 @@ public class WeatherActivity extends Activity{
 				if(cursor.moveToFirst()){
 					do{
 						citycode = cursor.getString(cursor.getColumnIndex("city_code"));
+						//将自动方式获得的name code缓存
+						sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
+						editor = sharedPreferences.edit();
+						editor.clear();
+						editor.commit();
+						editor.putString("cityName", cityname);
+						editor.putString("cityCode", citycode);
+						editor.commit();
 						Log.d("citycodezidongdingwei", citycode);
 					}while(cursor.moveToNext());
 				}
@@ -111,7 +141,7 @@ public class WeatherActivity extends Activity{
 			citycode = getIntent().getStringExtra("city_code");
 			Log.d("citycode", citycode);
 		}
-		Log.d("最终的citycode", citycode);
+		//Log.d("最终的citycode", citycode);
 		getWeather(citycode);
 	}
 	/*
@@ -294,4 +324,13 @@ public class WeatherActivity extends Activity{
 	         }
 		db.close();
 	    }
+	@Override
+	public void onBackPressed() {
+		//在天气预报信息页按下返回键，退出应用
+		super.onBackPressed();
+		Intent intent = new Intent();  
+        intent.setAction("action.exit");  
+        WeatherActivity.this.sendBroadcast(intent);  
+		Log.d("发送广播", intent.getAction());
+	}
 }
