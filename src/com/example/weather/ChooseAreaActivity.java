@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -42,25 +43,28 @@ public class ChooseAreaActivity extends Activity {
 	private final static String fileName = "city.json";
 	private List<String> dataList = new ArrayList<String>();
 	/**
-	 * Ê¡ÁĞ±í
+	 * çœåˆ—è¡¨
 	 */
 	private List<Province> provinceList;
 	/**
-	 * ³ÇÊĞÁĞ±í
+	 * åŸå¸‚åˆ—è¡¨
 	 */
 	private List<City> cityList;
 	/**
-	 * Ñ¡ÖĞµÄÊ¡·İ
+	 * é€‰ä¸­çš„çœä»½
 	 */
 	private Province selectedProvince;
 	/**
-	 * Ñ¡ÖĞµÄ³ÇÊĞ
+	 * é€‰ä¸­çš„åŸå¸‚
 	 */
 	private City selectedCity;
 	/**
-	 * µ±Ç°Ñ¡ÖĞµÄ¼¶±ğ
+	 * å½“å‰é€‰ä¸­çš„çº§åˆ«
 	 */
 	private int currentLevel = 0;
+	//ç¼“å­˜åœ°å€ä¿¡æ¯
+	SharedPreferences sharedPreferences;
+	SharedPreferences.Editor editor;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,12 +77,12 @@ public class ChooseAreaActivity extends Activity {
 		weatherDb = WeatherDb.getInstance(this);
 		
 		/*
-		 * ±íÎª¿Õ¾Í²åÈë³ÇÊĞ
+		 * è¡¨ä¸ºç©ºå°±æ’å…¥åŸå¸‚
 		 */
 		if (IsEmpty()) {  
 			getJson(fileName);
         }else {
-//			Log.d("tga", "·Ç¿Õ");
+//			Log.d("tga", "éç©º");
 		} 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -95,11 +99,19 @@ public class ChooseAreaActivity extends Activity {
 					intent.putExtra("city_name", cityname);
 					intent.putExtra("city_code", citycode);
 					startActivity(intent);
+					sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
+					editor = sharedPreferences.edit();
+					editor.clear();
+			        editor.commit();
+			        editor.putString("cityName", cityname);
+			        editor.putString("cityCode", citycode);
+			        //ä¿å­˜key-valueå¯¹åˆ°æ–‡ä»¶ä¸­
+			        editor.commit();
 //					finish();
 				}
 			}
 		});
-		queryProvinces();  // ¼ÓÔØÊ¡¼¶Êı¾İ
+		queryProvinces();  // åŠ è½½çœçº§æ•°æ®
 	}
 
 	private void queryProvinces() {
@@ -111,13 +123,13 @@ public class ChooseAreaActivity extends Activity {
 			}
 			adapter.notifyDataSetChanged();
 			listView.setSelection(0);
-			titleText.setText("ÖĞ¹ú");
+			titleText.setText("ä¸­å›½");
 			currentLevel = LEVEL_PROVINCE;
 		} 
 	}
 
 	/**
-	 * ´ÓÊı¾İ¿â²éÑ¯Ñ¡ÖĞÊ¡ÄÚµÄ³ÇÊĞ
+	 * ä»æ•°æ®åº“æŸ¥è¯¢é€‰ä¸­çœå†…çš„åŸå¸‚
 	 */
 	private void queryCities() {
 		cityList = weatherDb.loadCities(selectedProvince.getProvinceName());
@@ -134,7 +146,7 @@ public class ChooseAreaActivity extends Activity {
 	}
 	
 	/*
-	 * ÅĞ¶Ï±íÊÇ·ñÎª¿Õ
+	 * åˆ¤æ–­è¡¨æ˜¯å¦ä¸ºç©º
 	 */
 	private boolean IsEmpty() {	
 		boolean isEmpty=false;
@@ -150,7 +162,7 @@ public class ChooseAreaActivity extends Activity {
 	 }
 	
 	/*
-	 * ²åÈë³ÇÊĞÊı¾İ
+	 * æ’å…¥åŸå¸‚æ•°æ®
 	 */
 	private void getJson(String fileName) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -163,18 +175,18 @@ public class ChooseAreaActivity extends Activity {
 		    	stringBuilder.append(line);
 		    }
 		    JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-		    JSONArray jsonArray = jsonObject.getJSONArray("³ÇÊĞ´úÂë");
+		    JSONArray jsonArray = jsonObject.getJSONArray("åŸå¸‚ä»£ç ");
 			    for (int i = 0; i < jsonArray.length(); i++) {
 			    	JSONObject object = jsonArray.getJSONObject(i);
-			    	String sheng = object.getString("Ê¡");  
+			    	String sheng = object.getString("çœ");  
 		            db.execSQL("insert into Province(province_name)values(?)",new String[]{sheng});
-			        String city = object.getString("ÊĞ");  
-		            //½«»ñÈ¡µÄÇ¶Ì×µÄJSON´®,ÔÙ½âÊÍÒ»´Î, µÃµ½¿ÉÊ¹ÓÃµÄ¶ÔÏó. 
+			        String city = object.getString("å¸‚");  
+		            //å°†è·å–çš„åµŒå¥—çš„JSONä¸²,å†è§£é‡Šä¸€æ¬¡, å¾—åˆ°å¯ä½¿ç”¨çš„å¯¹è±¡. 
 			        JSONArray cityArray = new JSONArray(city);
 				        for(int j=0;j<cityArray.length();j++){
 				        	JSONObject cityObject = cityArray.getJSONObject(j);
-				        	String cityName = cityObject.getString("ÊĞÃû");
-				        	String cityCode = cityObject.getString("±àÂë");  
+				        	String cityName = cityObject.getString("å¸‚å");
+				        	String cityCode = cityObject.getString("ç¼–ç ");  
 //				        	String cityNameutf = new String(cityName.getBytes(),"utf-8");
 //				        	String cityCodeutf = new String(cityCode.getBytes(),"utf-8");
 				        	db.execSQL("insert into City(province_name,city_name,city_code)values(?,?,?)",new String[]{sheng,cityName,cityCode});
@@ -192,7 +204,7 @@ public class ChooseAreaActivity extends Activity {
 	    }
 	
 	/**
-	 * ²¶»ñBack°´¼ü£¬¸ù¾İµ±Ç°µÄ¼¶±ğÀ´ÅĞ¶Ï£¬´ËÊ±Ó¦¸Ã·µ»ØÊĞÁĞ±íÁĞ±í¡¢»¹ÊÇÖ±½ÓÍË³ö¡£
+	 * æ•è·BackæŒ‰é”®ï¼Œæ ¹æ®å½“å‰çš„çº§åˆ«æ¥åˆ¤æ–­ï¼Œæ­¤æ—¶åº”è¯¥è¿”å›å¸‚åˆ—è¡¨åˆ—è¡¨ã€è¿˜æ˜¯ç›´æ¥é€€å‡ºã€‚
 	 */
 	@Override
 	public void onBackPressed() {

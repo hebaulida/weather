@@ -70,7 +70,7 @@ public class WeatherActivity extends Activity{
 						String high = (String) msg.getData().get("high");
 						String type = (String) msg.getData().get("type");
 						String low = (String) msg.getData().get("low");
-						// ÔÚÕâÀï½øĞĞUI²Ù×÷£¬½«½á¹ûÏÔÊ¾µ½½çÃæÉÏ
+						// åœ¨è¿™é‡Œè¿›è¡ŒUIæ“ä½œï¼Œå°†ç»“æœæ˜¾ç¤ºåˆ°ç•Œé¢ä¸Š
 						titleText.setText(city);
 						dateText.setText(date);
 						typeText.setText(type);
@@ -84,12 +84,12 @@ public class WeatherActivity extends Activity{
 				}
 			};
 		/*
-		 * ÏÈÅĞ¶ÏÊÇ´ÓÄÄ¸öÑ¡ÏîÀ´µÄ£¬Á½¸ö·½·¨¸øcitycode¸³Öµ
+		 * å…ˆåˆ¤æ–­æ˜¯ä»å“ªä¸ªé€‰é¡¹æ¥çš„ï¼Œä¸¤ä¸ªæ–¹æ³•ç»™citycodeèµ‹å€¼
 		 */
 		if (citynamezidong!=null) {
-			Log.d("WeatherActivity ×Ô¶¯¶¨Î»", citynamezidong);
+			Log.d("WeatherActivity è‡ªåŠ¨å®šä½", citynamezidong);
 			/*
-			 * »¹ÒªÅĞ¶Ï³ÇÊĞ±íÊÇ·ñÎª¿Õ
+			 * è¿˜è¦åˆ¤æ–­åŸå¸‚è¡¨æ˜¯å¦ä¸ºç©º
 			 */
 			if (IsEmpty()) {  
 				getJson(fileName);
@@ -111,11 +111,11 @@ public class WeatherActivity extends Activity{
 			citycode = getIntent().getStringExtra("city_code");
 			Log.d("citycode", citycode);
 		}
-		Log.d("×îÖÕµÄcitycode", citycode);
+		Log.d("æœ€ç»ˆçš„citycode", citycode);
 		getWeather(citycode);
 	}
 	/*
-	 * ÏÔÊ¾ÌìÆøĞÅÏ¢
+	 * æ˜¾ç¤ºå¤©æ°”ä¿¡æ¯
 	 */
 	private void showWeather(String cityname) {
 		dbHelper = new WeatherOpenHelper(this, "Weather.db", null, 1);
@@ -154,7 +154,7 @@ public class WeatherActivity extends Activity{
 		cursor.close();
 	}
 	/*
-	 * »ñÈ¡ÌìÆøĞÅÏ¢
+	 * è·å–å¤©æ°”ä¿¡æ¯
 	 */
 	private void getWeather(String citycode) {
 		RequestQueue mQueue = Volley.newRequestQueue(this); 
@@ -173,7 +173,7 @@ public class WeatherActivity extends Activity{
 				Log.e("TAG", error.getMessage(), error);
 				}
 			})
-		{//¸²¸ÇparseNetworkResponseÕâ¸ö·½·¨£¬Ö±½ÓÊ¹ÓÃUTF-8¶Ô·şÎñÆ÷µÄ·µ»ØÊı¾İ½øĞĞ×ªÂë¡£ 
+		{//è¦†ç›–parseNetworkResponseè¿™ä¸ªæ–¹æ³•ï¼Œç›´æ¥ä½¿ç”¨UTF-8å¯¹æœåŠ¡å™¨çš„è¿”å›æ•°æ®è¿›è¡Œè½¬ç ã€‚ 
 			protected Response<JSONObject>  parseNetworkResponse(NetworkResponse response)
 			{
 			JSONObject jsonObject;
@@ -194,7 +194,7 @@ public class WeatherActivity extends Activity{
 		mQueue.add(jsonObjectRequest);
 	}
 	/*
-	 * ½âÎö¡¢´æ´¢ÌìÆøÊı¾İ
+	 * è§£æã€å­˜å‚¨å¤©æ°”æ•°æ®
 	 */
 	public void handleWeatherResponse(String response) {
 		dbHelper = new WeatherOpenHelper(this, "Weather.db", null, 1);
@@ -238,7 +238,7 @@ public class WeatherActivity extends Activity{
 	}
 	
 	/*
-	 * ÅĞ¶Ï±íÊÇ·ñÎª¿Õ
+	 * åˆ¤æ–­è¡¨æ˜¯å¦ä¸ºç©º
 	 */
 	private boolean IsEmpty() {	
 		boolean isEmpty=false;
@@ -254,7 +254,7 @@ public class WeatherActivity extends Activity{
 	 }
 	
 	/*
-	 * ²åÈë³ÇÊĞÊı¾İ
+	 * æ’å…¥åŸå¸‚æ•°æ®
 	 */
 	private void getJson(String fileName) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -267,18 +267,18 @@ public class WeatherActivity extends Activity{
 		    	stringBuilder.append(line);
 		    }
 		    JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-		    JSONArray jsonArray = jsonObject.getJSONArray("³ÇÊĞ´úÂë");
+		    JSONArray jsonArray = jsonObject.getJSONArray("åŸå¸‚ä»£ç ");
 			    for (int i = 0; i < jsonArray.length(); i++) {
 			    	JSONObject object = jsonArray.getJSONObject(i);
-			    	String sheng = object.getString("Ê¡");  
+			    	String sheng = object.getString("çœ");  
 		            db.execSQL("insert into Province(province_name)values(?)",new String[]{sheng});
-			        String city = object.getString("ÊĞ");  
-		            //½«»ñÈ¡µÄÇ¶Ì×µÄJSON´®,ÔÙ½âÊÍÒ»´Î, µÃµ½¿ÉÊ¹ÓÃµÄ¶ÔÏó. 
+			        String city = object.getString("å¸‚");  
+		            //å°†è·å–çš„åµŒå¥—çš„JSONä¸²,å†è§£é‡Šä¸€æ¬¡, å¾—åˆ°å¯ä½¿ç”¨çš„å¯¹è±¡. 
 			        JSONArray cityArray = new JSONArray(city);
 				        for(int j=0;j<cityArray.length();j++){
 				        	JSONObject cityObject = cityArray.getJSONObject(j);
-				        	String cityName = cityObject.getString("ÊĞÃû");
-				        	String cityCode = cityObject.getString("±àÂë");  
+				        	String cityName = cityObject.getString("å¸‚å");
+				        	String cityCode = cityObject.getString("ç¼–ç ");  
 //				        	String cityNameutf = new String(cityName.getBytes(),"utf-8");
 //				        	String cityCodeutf = new String(cityCode.getBytes(),"utf-8");
 				        	db.execSQL("insert into City(province_name,city_name,city_code)values(?,?,?)",new String[]{sheng,cityName,cityCode});

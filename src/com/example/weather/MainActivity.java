@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,10 +33,26 @@ public class MainActivity extends Activity implements OnClickListener{
 
 	private String provider;
 	private String cityname = null; 
+	//ç¼“å­˜åœ°å€ä¿¡æ¯
+	SharedPreferences sharedPreferences;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		sharedPreferences = getSharedPreferences("info", MODE_PRIVATE);
+		String cityName = sharedPreferences.getString("cityName", "");
+		String cityCode = sharedPreferences.getString("cityCode", "");
+		if(cityName!=null&cityName.length()>0){
+			Log.d(cityName, "---------"+cityCode);
+			Intent intent = new Intent(MainActivity.this,WeatherActivity.class);
+			intent.putExtra("city_name", cityName);
+			intent.putExtra("city_code", cityCode);
+			startActivity(intent);
+		}
+		
+		
+		
+		
 		setContentView(R.layout.start);
 		zidong = (Button)findViewById(R.id.zidong);
 		shoudong = (Button)findViewById(R.id.shoudong);
@@ -49,21 +66,21 @@ public class MainActivity extends Activity implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.zidong:
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			// »ñÈ¡ËùÓĞ¿ÉÓÃµÄÎ»ÖÃÌá¹©Æ÷
+			// è·å–æ‰€æœ‰å¯ç”¨çš„ä½ç½®æä¾›å™¨
 			List<String> providerList = locationManager.getProviders(true);
 			if (providerList.contains(LocationManager.GPS_PROVIDER)) {
 				provider = LocationManager.GPS_PROVIDER;
 			} else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
 				provider = LocationManager.NETWORK_PROVIDER;
 			} else {
-				// µ±Ã»ÓĞ¿ÉÓÃµÄÎ»ÖÃÌá¹©Æ÷Ê±£¬µ¯³öToastÌáÊ¾ÓÃ»§
-				Toast.makeText(this, "No location provider to use",
+				// å½“æ²¡æœ‰å¯ç”¨çš„ä½ç½®æä¾›å™¨æ—¶ï¼Œå¼¹å‡ºToastæç¤ºç”¨æˆ·
+				Toast.makeText(this, "æ²¡æœ‰å¯ç”¨çš„ä½ç½®æä¾›å™¨",
 						Toast.LENGTH_SHORT).show();
 				return;
 			}
 			Location location = locationManager.getLastKnownLocation(provider);
 			if (location != null) {
-				// ÏÔÊ¾µ±Ç°Éè±¸µÄÎ»ÖÃĞÅÏ¢
+				// æ˜¾ç¤ºå½“å‰è®¾å¤‡çš„ä½ç½®ä¿¡æ¯
 				showLocation(location);
 			}else{
 				Log.d("mainactivity","location=null");
@@ -98,7 +115,7 @@ public class MainActivity extends Activity implements OnClickListener{
 
 		@Override
 		public void onLocationChanged(Location location) {
-			// ¸üĞÂµ±Ç°Éè±¸µÄÎ»ÖÃĞÅÏ¢
+			// æ›´æ–°å½“å‰è®¾å¤‡çš„ä½ç½®ä¿¡æ¯
 //			showLocation(location);
 		}
 	};
@@ -107,7 +124,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			@Override
 			public void run() {
 				try {
-					// ×é×°·´ÏòµØÀí±àÂëµÄ½Ó¿ÚµØÖ·
+					// ç»„è£…åå‘åœ°ç†ç¼–ç çš„æ¥å£åœ°å€
 					StringBuilder url = new StringBuilder();
 					url.append("http://api.map.baidu.com/geocoder/v2/?ak=PuGUhYp9FXHyPPjEnOObIbrw&location=");
 					url.append(location.getLatitude()).append(",")
@@ -118,7 +135,7 @@ public class MainActivity extends Activity implements OnClickListener{
 //					url.append("&output=json&pois=1");
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpGet httpGet = new HttpGet(url.toString());
-					// ÔÚÇëÇóÏûÏ¢Í·ÖĞÖ¸¶¨ÓïÑÔ£¬±£Ö¤·şÎñÆ÷»á·µ»ØÖĞÎÄÊı¾İ
+					// åœ¨è¯·æ±‚æ¶ˆæ¯å¤´ä¸­æŒ‡å®šè¯­è¨€ï¼Œä¿è¯æœåŠ¡å™¨ä¼šè¿”å›ä¸­æ–‡æ•°æ®
 					httpGet.addHeader("Accept-Language", "zh-CN");
 					HttpResponse httpResponse = httpClient.execute(httpGet);
 					if (httpResponse.getStatusLine().getStatusCode() == 200) {
@@ -133,14 +150,14 @@ public class MainActivity extends Activity implements OnClickListener{
 								JSONObject object = dizhiArray.getJSONObject(i);
 //								Log.d("json",object.getString("city")); 
 								String citynamequancheng = object.getString("city");
-//								String citynamequancheng = "±£¶¨ÊĞ";
+//								String citynamequancheng = "ä¿å®šå¸‚";
 								Log.d("MainActivity", citynamequancheng);
 								cityname = subStrOfByte(citynamequancheng,6);
-								Log.d("MainActivity ½ØÈ¡ cityname", cityname);
+								Log.d("MainActivity æˆªå– cityname", cityname);
 								Intent intent = new Intent(MainActivity.this,WeatherActivity.class);
 								intent.putExtra("city_name_zidong", cityname);
 								/*
-								 * ÉÏ±ß³ÇÊĞÃûÓĞÎÊÌâ£¬»¹ÓĞ¡°ÊĞ¡±£¬Êı¾İ²éÕÒ³öÎÊÌâ
+								 * ä¸Šè¾¹åŸå¸‚åæœ‰é—®é¢˜ï¼Œè¿˜æœ‰â€œå¸‚â€ï¼Œæ•°æ®æŸ¥æ‰¾å‡ºé—®é¢˜
 								 */
 								startActivity(intent);
 								finish();
@@ -157,9 +174,9 @@ public class MainActivity extends Activity implements OnClickListener{
 	
 	/**
 	 * 
-	 * @param str Òª½ØÈ¡µÄ×Ö·û´®
-	 * @param num Òª½ØÈ¡µÄ¸öÊı£¨×Ö½Ú£©
-	 * @return ½ØÈ¡ºóµÄ×Ö·û´®
+	 * @param str è¦æˆªå–çš„å­—ç¬¦ä¸²
+	 * @param num è¦æˆªå–çš„ä¸ªæ•°ï¼ˆå­—èŠ‚ï¼‰
+	 * @return æˆªå–åçš„å­—ç¬¦ä¸²
 	 */
 	public static String subStrOfByte(String str, int num) {
 		byte[] b = str==null?new byte[0]:str.getBytes();
